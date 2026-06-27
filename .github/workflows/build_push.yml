@@ -45,7 +45,7 @@ jobs:
       - id: generate-matrices
         name: Create output matrices
         run: |
-          python ./.github/scripts/generate-build-matrices.py "$NX_BASE" Debug
+          python ./.github/scripts/generate-build-matrices.py "$NX_BASE" Release
 
   build:
     name: Build extensions (${{ matrix.chunk.number }})
@@ -72,16 +72,7 @@ jobs:
         with:
           cache-read-only: ${{ matrix.chunk.number > 1 }}
 
-#      - name: Prepare signing key
-#        run: |
-#          echo ${{ secrets.SIGNING_KEY }} | base64 -d > signingkey.jks
-
       - name: Build extensions (${{ matrix.chunk.number }})
-        env:
-          MODULES: ${{ join(matrix.chunk.modules, ' ') }}
-          ALIAS: ${{ secrets.ALIAS }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           ./gradlew spotlessApply
           ./gradlew $MODULES
@@ -148,4 +139,3 @@ jobs:
           pip install protobuf
           python ../main/.github/scripts/merge-repo.py "$DELETE"
           ../main/.github/scripts/commit-repo.sh
-          
